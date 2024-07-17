@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generic Countdown</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: transparent;
+        }
+        h1 {
+            font-size: 2em;
+            color: #333;
+        }
+    </style>
+    <script>
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const pairs = queryString.split("&");
+
+            for (const pair of pairs) {
+                const [key, value] = pair.split("=");
+                params[key] = decodeURIComponent(value);
+            }
+
+            return params;
+        }
+
+        function startCountdown() {
+            const params = getUrlParams();
+            const eventDay = parseInt(params.day);
+            const [startHour, startMinute] = params.time.split(":").map(Number);
+            const duration = params.duration ? parseInt(params.duration) : 30; // default duration is 30 minutes
+            const message = params.message || ""; // default message
+
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+            const currentHours = now.getHours();
+            const currentMinutes = now.getMinutes();
+            const currentSeconds = now.getSeconds();
+            const currentTime = currentHours * 60 + currentMinutes; // current time in minutes
+            const startTime = startHour * 60 + startMinute; // start time in minutes
+            const endTime = startTime + duration; // end time is the start time plus duration
+
+            if (dayOfWeek === eventDay && currentTime >= startTime && currentTime < endTime) { // Check if it's the specified day and between the start and end times
+                const remainingMinutes = endTime - currentTime - 1;
+                const remainingSeconds = 60 - currentSeconds;
+                document.getElementById("countdown").textContent = `${message} ${remainingMinutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+
+                // Update the countdown every second
+                setTimeout(startCountdown, 1000); // 1000 ms = 1 second
+            } else {
+                document.getElementById("countdown").textContent = '';
+            }
+        }
+
+        window.onload = startCountdown;
+    </script>
+</head>
+<body>
+    <h1 id="countdown"></h1>
+</body>
+</html>
